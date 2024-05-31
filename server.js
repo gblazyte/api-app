@@ -4,10 +4,8 @@ const https = require('https');
 const app = express();
 const port = 3000;
 
-// Serve static files from the "public" directory
 app.use(express.static('public'));
 
-// Endpoint to handle the test request
 app.get('/test', (req, res) => {
     const options = {
         method: 'GET',
@@ -28,19 +26,19 @@ app.get('/test', (req, res) => {
         });
 
         resHttps.on('end', function () {
-            const body = Buffer.concat(chunks);
-            res.send(body.toString());
+            const body = Buffer.concat(chunks).toString();
+            res.setHeader('Content-Type', 'application/json');
+            res.send(body);
         });
     });
 
     reqHttps.on('error', function (e) {
-        res.status(500).send('Error: ' + e.message);
+        res.status(500).json({ error: e.message });
     });
 
     reqHttps.end();
 });
 
-// Start the server and log a message to the console
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

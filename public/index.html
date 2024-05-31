@@ -4,22 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Node.js HTTP Request</title>
+    <style>
+        #result {
+            margin-top: 20px;
+        }
+        .data-item {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <button id="testButton">Test</button>
+    <button id="testButton">Test "Get City Info"</button>
     <div id="result"></div>
 
     <script>
         document.getElementById('testButton').addEventListener('click', () => {
             fetch('/test')
-                .then(response => response.text())
+                .then(response => response.json())
                 .then(data => {
-                    document.getElementById('result').innerText = data;
+                    displayData(data.data);
                 })
                 .catch(error => {
                     document.getElementById('result').innerText = 'Error: ' + error;
                 });
         });
+
+        function displayData(data) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                    const div = document.createElement('div');
+                    div.className = 'data-item';
+                    div.innerHTML = `<strong>${key}:</strong> ${data[key]}`;
+                    resultDiv.appendChild(div);
+                }
+            }
+        }
     </script>
 </body>
 </html>
