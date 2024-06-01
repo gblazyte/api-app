@@ -1,47 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Node.js HTTP Request</title>
-    <style>
-        #result {
-            margin-top: 20px;
-        }
-        .data-item {
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-    <button id="testButton">Test "Get City Info"</button>
-    <div id="result"></div>
-
+    <title>Road To Rome App</title>
     <script>
-        document.getElementById('testButton').addEventListener('click', () => {
-            fetch('/test')
-                .then(response => response.json())
-                .then(data => {
-                    displayData(data.data);
-                })
-                .catch(error => {
-                    document.getElementById('result').innerText = 'Error: ' + error;
-                });
-        });
+        async function fetchCity() {
+            try {
+                const response = await fetch('/test');
+                const data = await response.json();
+                console.log(data);
+                document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error(error);
+            }
+        }
 
-        function displayData(data) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = ''; // Clear previous results
-
-            for (const key in data) {
-                if (data.hasOwnProperty(key)) {
-                    const div = document.createElement('div');
-                    div.className = 'data-item';
-                    div.innerHTML = `<strong>${key}:</strong> ${data[key]}`;
-                    resultDiv.appendChild(div);
-                }
+        async function fetchNearbyCities() {
+            try {
+                const response = await fetch('/nearby');
+                const data = await response.json();
+                console.log(data);
+                document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error(error);
             }
         }
     </script>
+</head>
+
+<body>
+    <h1>Road To Rome App</h1>
+    <button onclick="fetchCity()">Fetch City Info</button>
+    <button onclick="fetchNearbyCities()">Fetch Nearby Cities</button>
+    <pre id="output"></pre>
 </body>
+
 </html>
