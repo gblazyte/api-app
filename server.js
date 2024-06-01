@@ -8,6 +8,8 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+let cityId;
+
 app.use(express.static('public'));
 
 app.get('/test', async (req, res) => {
@@ -23,17 +25,16 @@ app.get('/test', async (req, res) => {
     };
 
     try {
-        const body = await new Promise((resolve, reject) => {
+        const response = await new Promise((resolve, reject) => {
             const reqHttps = https.request(options, (resHttps) => {
-                const chunks = [];
+                let body = '';
 
                 resHttps.on('data', (chunk) => {
-                    chunks.push(chunk);
+                    body += chunk;
                 });
 
                 resHttps.on('end', () => {
-                    const body = Buffer.concat(chunks).toString();
-                    resolve(body);
+                    resolve(JSON.parse(body));
                 });
             });
 
@@ -44,8 +45,10 @@ app.get('/test', async (req, res) => {
             reqHttps.end();
         });
 
+        cityId = response.data.wikiDataId; // Access the city id property directly from the response
+
         res.setHeader('Content-Type', 'application/json');
-        res.send(body);
+        res.send(response); // Send the response containing the city info
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -55,7 +58,7 @@ app.get('/test', async (req, res) => {
 app.get('/nearby', async (req, res) => {
     const options = {
         method: 'GET',
-        url: 'https://wft-geo-db.p.rapidapi.com/v1/geo/cities/Q60/nearbyCities',
+        url: `https://wft-geo-db.p.rapidapi.com/v1/geo/cities/${cityId}/nearbyCities`,
         params: { radius: '100' },
         headers: {
             'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
@@ -72,7 +75,7 @@ app.get('/nearby', async (req, res) => {
 
 
         res.setHeader('Content-Type', 'application/json');
-        res.send({ cities: cityNames }); // Send city names as part of the response
+        res.send({ cities: cityNames }); // Send city names as part of the response;
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
