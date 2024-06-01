@@ -65,8 +65,14 @@ app.get('/nearby', async (req, res) => {
 
     try {
         const response = await axios.request(options);
+        const citiesData = response.data.data; // Extract data array from the response
+        const cityNames = citiesData.map(city => city.name); // Extract city names
+
+
+
+
         res.setHeader('Content-Type', 'application/json');
-        res.send(response.data);
+        res.send({ cities: cityNames }); // Send city names as part of the response
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
