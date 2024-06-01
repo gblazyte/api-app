@@ -1,42 +1,75 @@
 const express = require('express');
 const https = require('https');
+const axios = require('axios');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.static('public'));
 
-app.get('/test', (req, res) => {
+app.get('/test', async (req, res) => {
     const options = {
         method: 'GET',
         hostname: 'wft-geo-db.p.rapidapi.com',
         port: null,
         path: '/v1/geo/cities/Q60',
         headers: {
-            'X-RapidAPI-Key': '2bcd52099amshb6dade3fc472b89p137ac5jsn8d1df60702ce',
+            'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
             'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com'
         }
     };
 
-    const reqHttps = https.request(options, function (resHttps) {
-        const chunks = [];
+    try {
+        const body = await new Promise((resolve, reject) => {
+            const reqHttps = https.request(options, (resHttps) => {
+                const chunks = [];
 
-        resHttps.on('data', function (chunk) {
-            chunks.push(chunk);
+                resHttps.on('data', (chunk) => {
+                    chunks.push(chunk);
+                });
+
+                resHttps.on('end', () => {
+                    const body = Buffer.concat(chunks).toString();
+                    resolve(body);
+                });
+            });
+
+            reqHttps.on('error', (e) => {
+                reject(e);
+            });
+
+            reqHttps.end();
         });
 
-        resHttps.on('end', function () {
-            const body = Buffer.concat(chunks).toString();
-            res.setHeader('Content-Type', 'application/json');
-            res.send(body);
-        });
-    });
-
-    reqHttps.on('error', function (e) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(body);
+    } catch (e) {
         res.status(500).json({ error: e.message });
-    });
+    }
+});
 
-    reqHttps.end();
+
+app.get('/nearby', async (req, res) => {
+    const options = {
+        method: 'GET',
+        url: 'https://wft-geo-db.p.rapidapi.com/v1/geo/cities/Q60/nearbyCities',
+        params: { radius: '100' },
+        headers: {
+            'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+            'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com'
+        }
+    };
+
+    try {
+        const response = await axios.request(options);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(response.data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 app.listen(port, () => {
