@@ -56,8 +56,11 @@ async function getNearbyCities(cityId) {
         method: 'GET',
         url: `https://wft-geo-db.p.rapidapi.com/v1/geo/cities/${cityId}/nearbyCities`,
         params: {
-            radius: '100',
-            minPopulation: '50000'
+            radius: 100,
+            distanceUnit: 'MI',
+            minPopulation: 40000,
+            types: 'CITY',
+            sort: 'population'
         },
         headers: {
             'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,

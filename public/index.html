@@ -45,7 +45,7 @@
 
             if (wikiDataId) {
                 selectedCityId = wikiDataId;
-                attemptsLeft = 5;
+                attemptsLeft = 100;
                 document.getElementById('gameContainer').style.display = 'block';
                 updateAttempts();
                 await getNearbyCities(selectedCityId);
