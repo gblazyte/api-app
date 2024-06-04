@@ -8,7 +8,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-let cityId;
+let mainCityId;
 
 app.use(express.static('public'));
 
@@ -45,7 +45,7 @@ app.get('/test', async (req, res) => {
             reqHttps.end();
         });
 
-        cityId = response.data.wikiDataId; // Access the city id property directly from the response
+        mainCityId = response.data.wikiDataId; // Access the city id property directly from the response
 
         res.setHeader('Content-Type', 'application/json');
         res.send(response); // Send the response containing the city info
@@ -58,7 +58,7 @@ app.get('/test', async (req, res) => {
 app.get('/nearby', async (req, res) => {
     const options = {
         method: 'GET',
-        url: `https://wft-geo-db.p.rapidapi.com/v1/geo/cities/${cityId}/nearbyCities`,
+        url: `https://wft-geo-db.p.rapidapi.com/v1/geo/cities/${mainCityId}/nearbyCities`,
         params: { radius: '100' },
         headers: {
             'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
