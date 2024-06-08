@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Road To Rome App</title>
 </head>
-
 <body>
     <h1>Road To Rome App</h1>
     <div>
-        <label for="cityInput">Enter a city name: </label>
-        <input type="text" id="cityInput" placeholder="Enter city name">
-        <button onclick="startGame()">Submit</button>
+        <label for="usernameInput">Enter your username: </label>
+        <input type="text" id="usernameInput" placeholder="Enter username">
+        <button onclick="submitUsername()">Submit</button>
     </div>
     <div id="gameContainer" style="display:none;">
-        <h2>Choose the city closest to Rome</h2>
+        <h2>Choose your starting city</h2>
+        <div>
+            <label for="cityInput">Enter a city name: </label>
+            <input type="text" id="cityInput" placeholder="Enter city name">
+            <button onclick="startGame()">Start Game</button>
+        </div>
         <div id="citiesContainer"></div>
         <div id="distanceContainer"></div>
         <div id="attemptsContainer"></div>
@@ -25,6 +28,27 @@
         let attemptsLeft = 5;
         let selectedCityId = null;
         const ROME_CITY_ID = 'Q220'; // WikiData ID for Rome
+        let username = null;
+
+        async function submitUsername() {
+            username = document.getElementById('usernameInput').value;
+            document.getElementById('usernameInput').disabled = true;
+            document.getElementById('gameContainer').style.display = 'block';
+        }
+
+        async function startGame() {
+            const cityName = document.getElementById('cityInput').value;
+            const wikiDataId = await getWikidataID(cityName);
+
+            if (wikiDataId) {
+                selectedCityId = wikiDataId;
+                attemptsLeft = 100;
+                updateAttempts();
+                await getNearbyCities(selectedCityId);
+            } else {
+                alert('No WikiData ID found for the city: ' + cityName);
+            }
+        }
 
         async function getWikidataID(searchTerm) {
             const url = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(searchTerm)}&language=en&format=json&origin=*`;
@@ -36,21 +60,6 @@
             } catch (error) {
                 console.error('Fetch operation error:', error);
                 return null;
-            }
-        }
-
-        async function startGame() {
-            const cityName = document.getElementById('cityInput').value;
-            const wikiDataId = await getWikidataID(cityName);
-
-            if (wikiDataId) {
-                selectedCityId = wikiDataId;
-                attemptsLeft = 100;
-                document.getElementById('gameContainer').style.display = 'block';
-                updateAttempts();
-                await getNearbyCities(selectedCityId);
-            } else {
-                alert('No WikiData ID found for the city: ' + cityName);
             }
         }
 
@@ -103,7 +112,7 @@
                         document.getElementById('gameContainer').style.display = 'none';
                     } else {
                         selectedCityId = city.id;
-                        await delay(1500); // Add a delay of 1.5 second (1500 milliseconds)
+                        await delay(1500); // Add a delay of 1.5 seconds (1500 milliseconds)
                         await getNearbyCities(selectedCityId); // Fetch nearby cities after the delay
                     }
                 };
@@ -126,5 +135,4 @@
         }
     </script>
 </body>
-
 </html>

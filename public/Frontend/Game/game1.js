@@ -1,6 +1,30 @@
 document.addEventListener('DOMContentLoaded', function() {
+    let username = null;
+
+    
+    while (!username) {
+        username = prompt('Please enter your username:');
+        if (!username) {
+            alert('Username is required.');
+        }
+    }
+
+    const cityInputDiv = document.getElementById('cityInputDiv');
+    cityInputDiv.style.display = 'block';
+
+    const cityInput = document.getElementById('cityInput');
+    const submitButton = document.getElementById('submitButton');
+
+    submitButton.addEventListener('click', function() {
+        const cityName = cityInput.value;
+        if (!cityName) {
+            alert('Please enter a city name.');
+            return;
+        }
+        startGame(username, cityName);
+    });
+
     const params = new URLSearchParams(window.location.search);
-    const username = params.get('username');
     const currentCity = params.get('city');
     const steps = parseInt(params.get('steps'));
 
@@ -12,6 +36,18 @@ document.addEventListener('DOMContentLoaded', function() {
         displayCities(cities, username, steps);
     });
 });
+
+async function startGame(username, cityName) {
+    const params = new URLSearchParams(window.location.search);
+    const steps = parseInt(params.get('steps'));
+
+    document.getElementById('steps').textContent = `Steps: ${steps}`;
+    document.getElementById('statusText').textContent = `${username}, now you are in ${cityName}`;
+    updateDistance(cityName);
+
+    const cities = await fetchNearestCities(cityName);
+    displayCities(cities, username, steps);
+}
 
 function fetchNearestCities(city) {
     const apiKey = '115b086d63msh292d4c72f75bfe1p1e46a3jsndfe1067eb35';
