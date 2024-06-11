@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Road To Rome App</title>
+  <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Road To Rome App</h1>
+    <div class="input-section">
+      <label for="usernameInput">Enter your username:</label>
+      <input type="text" id="usernameInput" class="input-field" placeholder="Enter username">
+      <button onclick="submitUsername()" class="submit-btn">Submit</button>
+    </div>
+    <div id="gameContainer" class="game-container">
+      <h2>Choose your starting city</h2>
+      <div class="input-section">
+        <label for="cityInput">Enter a city name:</label>
+        <input type="text" id="cityInput" class="input-field" placeholder="Enter city name">
+        <button onclick="startGame()" class="submit-btn">Start Game</button>
+      </div>
+      <div id="citiesContainer" class="city-list"></div>
+      <div id="distanceContainer" class="info"></div>
+      <div id="attemptsContainer" class="info"></div>
+    </div>
+  </div>
+  <script type="text/javascript" src="./script.js"></script>
+</body>
+</html>
