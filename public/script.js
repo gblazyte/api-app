@@ -115,6 +115,7 @@ function displayCities(cities) {
   cities.forEach((city) => {
     const button = document.createElement('button');
     button.innerText = city.name;
+    button.classList.add('city-btn'); // Add this line to apply the new style
     button.onclick = async () => {
       const distance = await getDistanceToRome(city.id);
       attemptsLeft--;
@@ -131,6 +132,25 @@ function displayCities(cities) {
     container.appendChild(button);
   });
 }
+
+  cities.forEach((city) => {
+    const button = document.createElement('button');
+    button.innerText = city.name;
+    button.onclick = async () => {
+      const distance = await getDistanceToRome(city.id);
+      attemptsLeft--;
+      updateAttempts();
+      if (attemptsLeft === 0 || city.id === ROME_CITY_ID) {
+        alert(`Game Over! Distance to Rome: ${distance} km`);
+        document.getElementById('gameContainer').style.display = 'none';
+      } else {
+        selectedCityId = city.id;
+        await delay(1500); // Add a delay of 1.5 seconds (1500 milliseconds)
+        await getNearbyCities(selectedCityId, username, city.name); // Fetch nearby cities after the delay
+      }
+    };
+    container.appendChild(button);
+  });
 
 function displayDistance(distance) {
   const container = document.getElementById('distanceContainer');
